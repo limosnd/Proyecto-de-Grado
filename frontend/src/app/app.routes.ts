@@ -5,6 +5,8 @@ import { AnalysisComponent } from './components/analysis/analysis.component';
 import { ResultsComponent } from './components/results/results.component';
 import { ReportComponent } from './components/report/report.component';
 
+
+
 export const routes: Routes = [
   { path: '', component: HomeComponent },
   { path: 'upload', component: UploadComponent },

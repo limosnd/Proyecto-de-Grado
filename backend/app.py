@@ -10,7 +10,13 @@ import numpy as np
 from PIL import Image
 
 from predict_resnet_multiview import predict_birads_per_view
-
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlalchemy.orm import Session
+from models import User
+from database import Base, engine, get_db
+from auth import get_password_hash, verify_password, create_access_token, verify_token
+from datetime import timedelta
 app = FastAPI()
 
 # Middleware CORS correctamente aplicado
@@ -89,3 +95,36 @@ async def predict(
         results[view]["image_url"] = f"http://127.0.0.1:8000/images/{filename}"
 
     return JSONResponse(content=results)
+
+# Crear tablas
+Base.metadata.create_all(bind=engine)
+
+# Registro de usuario
+@app.post("/register")
+def register(username: str, email: str, password: str, db: Session = Depends(get_db)):
+    user_exists = db.query(User).filter((User.username == username) | (User.email == email)).first()
+    if user_exists:
+        raise HTTPException(status_code=400, detail="Usuario o email ya existe")
+    
+    hashed_pw = get_password_hash(password)
+    new_user = User(username=username, email=email, hashed_password=hashed_pw)
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return {"msg": "Usuario registrado exitosamente"}
+
+# Login de usuario
+@app.post("/login")
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.username == form_data.username).first()
+    if not user or not verify_password(form_data.password, user.hashed_password):
+        raise HTTPException(status_code=400, detail="Credenciales incorrectas")
+
+    access_token_expires = timedelta(minutes=30)
+    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    return {"access_token": access_token, "token_type": "bearer"}
+
+# Ruta protegida
+@app.get("/protected")
+def protected_route(payload: dict = Depends(verify_token)):
+    return {"msg": f"Hola {payload['sub']}, accediste con JWT válido"}
