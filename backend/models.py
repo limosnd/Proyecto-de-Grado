@@ -4,6 +4,7 @@ from database import Base
 
 class Usuario(Base):
     __tablename__ = "usuarios"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
     nombre = Column(String, nullable=False)
@@ -14,6 +15,7 @@ class Usuario(Base):
 
 class Reporte(Base):
     __tablename__ = "reportes"
+    __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
     usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
