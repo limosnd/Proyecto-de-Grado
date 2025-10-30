@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "http-server dist/frontend -p 8080 -a 0.0.0.0 --spa",
+    "start": "npm run build:prod && http-server dist/frontend -p 8080 -a 0.0.0.0 --spa",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
