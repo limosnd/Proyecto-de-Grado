@@ -22,7 +22,13 @@
     "@angular/router": "^17.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
-    "zone.js": "~0.14.0"
+    "zone.js": "~0.14.0",
+    "jspdf": "^2.5.1",
+    "chart.js": "^4.4.0",
+    "cornerstone-core": "^2.6.1",
+    "cornerstone-tools": "^6.0.6",
+    "cornerstone-math": "^0.1.10",
+    "cornerstone-web-image-loader": "^2.1.1"
   },
   "devDependencies": {
     "@angular-devkit/build-angular": "^17.0.0",
@@ -35,6 +41,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
-    "typescript": "~5.2.0"
+    "typescript": "~5.2.0",
+    "@types/cornerstone": "^1.0.0"
   }
 }

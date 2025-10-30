@@ -100,7 +100,7 @@ export class ReportComponent implements AfterViewInit {
             },
             tooltip: {
               callbacks: {
-                label: function (context) {
+                label: function (context: any) {
                   const value = context.raw as number;
                   return `${context.label}: ${value.toFixed(2)}%`;
                 }
