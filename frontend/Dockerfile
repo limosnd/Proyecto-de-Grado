@@ -4,6 +4,13 @@ FROM node:18-alpine
 # Instalar nginx
 RUN apk add --no-cache nginx
 
+# Crear directorio para nginx y establecer permisos
+RUN mkdir -p /usr/share/nginx/html && \
+    mkdir -p /var/log/nginx && \
+    mkdir -p /var/lib/nginx/tmp && \
+    chown -R nginx:nginx /var/lib/nginx && \
+    chown -R nginx:nginx /usr/share/nginx/html
+
 # Establecer directorio de trabajo
 WORKDIR /app
 
