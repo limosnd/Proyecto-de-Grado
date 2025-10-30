@@ -1,5 +1,8 @@
-# Multi-stage build para Angular
-FROM node:18-alpine AS build
+# Dockerfile simple de una sola etapa para Angular
+FROM node:18-alpine
+
+# Instalar nginx
+RUN apk add --no-cache nginx
 
 # Establecer directorio de trabajo
 WORKDIR /app
@@ -7,27 +10,23 @@ WORKDIR /app
 # Copiar package.json y package-lock.json
 COPY package*.json ./
 
-# Limpiar cache de npm e instalar dependencias
-RUN npm cache clean --force
+# Instalar dependencias
 RUN npm install --legacy-peer-deps --force
 
 # Copiar código fuente
 COPY . .
 
-# Construir la aplicación para producción
+# Construir la aplicación
 RUN npm run build --prod
 
-# Stage 2: Servir con nginx
-FROM nginx:alpine
-
-# Copiar archivos construidos desde el stage anterior
-COPY --from=build /app/dist/frontend /usr/share/nginx/html
+# Copiar archivos construidos a nginx
+RUN cp -r /app/dist/frontend/* /usr/share/nginx/html/
 
 # Copiar configuración de nginx
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/http.d/default.conf
 
 # Exponer puerto 80
 EXPOSE 80
 
-# Comando para iniciar nginx
+# Iniciar nginx
 CMD ["nginx", "-g", "daemon off;"]
