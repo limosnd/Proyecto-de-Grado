@@ -1,0 +1,11 @@
+[start]
+cmd = "npm start"
+
+[phases.build]
+cmd = "npm install --legacy-peer-deps --force && npm run build --prod"
+
+[phases.install]
+cmd = "npm install --legacy-peer-deps --force"
+
+[variables]
+NODE_ENV = "production"
