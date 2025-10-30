@@ -21,7 +21,7 @@ RUN npm run build --prod
 FROM nginx:alpine
 
 # Copiar archivos construidos desde el stage anterior
-COPY --from=build /app/dist /usr/share/nginx/html
+COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
 # Copiar configuración personalizada de nginx
 RUN echo 'server { \
