@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, UploadFile, File, Request
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -24,6 +24,7 @@ import models
 from database import engine
 import models
 from fastapi import HTTPException
+from pydantic import BaseModel
 from passlib.hash import bcrypt
 from pydantic import BaseModel
 import datetime
@@ -288,45 +289,50 @@ def registrar_usuario(usuario: UsuarioCreate):
 # Login optimizado
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
 
+class LoginData(BaseModel):
+    usuario: str
+    password: str
+
 @app.post("/login")
-def login(datos: dict):
+async def login(datos: LoginData, request: Request):
     try:
-        usuario = datos.get("usuario", "")
-        password = datos.get("password", "")
-        
+        usuario = datos.usuario
+        password = datos.password
+        client_ip = request.client.host if request.client else "unknown"
+        print(f"[LOGIN] Intento de login usuario={usuario} desde IP={client_ip}")
+
         if not usuario or not password:
+            print("[LOGIN] Faltan usuario o contraseña")
             raise HTTPException(status_code=400, detail="Usuario y contraseña son requeridos")
-        
-        # Usar SQLAlchemy en lugar de subprocess
+
         db = SessionLocal()
         try:
             user_record = db.query(Usuario).filter(Usuario.usuario == usuario).first()
-            
             if not user_record:
+                print(f"[LOGIN] Usuario no encontrado: {usuario}")
                 raise HTTPException(status_code=401, detail="Credenciales inválidas")
-            
-            # Verificar contraseña
+
             if not bcrypt.verify(password, user_record.password_hash):
+                print(f"[LOGIN] Contraseña incorrecta para usuario: {usuario}")
                 raise HTTPException(status_code=401, detail="Credenciales inválidas")
-            
-            # Crear token
+
             access_token = create_access_token(data={"sub": user_record.usuario})
+            print(f"[LOGIN] Login exitoso usuario={usuario}")
             return {
-                "access_token": access_token, 
-                "token_type": "bearer", 
+                "access_token": access_token,
+                "token_type": "bearer",
                 "user": {
                     "id": user_record.id,
-                    "usuario": user_record.usuario, 
+                    "usuario": user_record.usuario,
                     "nombre": user_record.nombre
                 }
             }
         finally:
             db.close()
-        
     except HTTPException:
         raise
     except Exception as e:
-        print(f"Error en login: {str(e)}")
+        print(f"[LOGIN] Error interno: {str(e)}")
         raise HTTPException(status_code=500, detail="Error interno del servidor")
 
 if __name__ == "__main__":
