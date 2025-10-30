@@ -3,14 +3,11 @@
   "version": "1.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "npm run build:prod && http-server dist/frontend -p 8080 -a 0.0.0.0 --spa",
-    "dev": "ng serve",
+    "start": "ng serve --host 0.0.0.0 --port $PORT --disable-host-check",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "serve:ssr": "node dist/birads-frontend/server/main.js",
-    "railway": "npm install --legacy-peer-deps --force && npm run build:prod && http-server dist/frontend -p $PORT -a 0.0.0.0 --spa"
+    "test": "ng test"
   },
   "private": true,
   "dependencies": {
