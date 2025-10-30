@@ -7,19 +7,21 @@ class Usuario(Base):
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String, nullable=False)
-    documento = Column(String, unique=True, nullable=False)
+    usuario = Column(String(50), unique=True, index=True, nullable=False)
+    nombre = Column(String(100), nullable=False)
     fecha_nacimiento = Column(Date, nullable=False)
-    rol = Column(String, nullable=False)
-    password_hash = Column(String, nullable=False)
+    rol = Column(String(50), nullable=False)
+    observaciones = Column(Text)
+    password_hash = Column(String(255), nullable=False)
+    created_at = Column(DateTime, server_default='now()')
 
 class Reporte(Base):
     __tablename__ = "reportes"
     __table_args__ = {'extend_existing': True}
 
     id = Column(Integer, primary_key=True, index=True)
-    usuario_id = Column(Integer, ForeignKey("usuarios.id"), nullable=False)
+    usuario_id = Column(Integer, ForeignKey("usuarios.id", ondelete="CASCADE"), nullable=False)
     fecha_creacion = Column(DateTime, default=func.now(), nullable=False)
-    resultado_birads = Column(String, nullable=False)  # BI-RADS más frecuente
-    detalles_json = Column(Text, nullable=False)  # JSON con todos los resultados
-    nombre_paciente = Column(String, nullable=True)  # Opcional para identificar el caso  
+    resultado_birads = Column(String(20), nullable=False)
+    detalles_json = Column(Text, nullable=False)
+    nombre_paciente = Column(String(100))
