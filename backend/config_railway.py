@@ -17,7 +17,7 @@ print(f"🔗 Conectando a: {DATABASE_URL[:30]}...")
 # Configuración de la aplicación
 DEBUG = os.getenv("DEBUG", "False").lower() == "true"
 SECRET_KEY = os.getenv("SECRET_KEY", "tu_clave_secreta_muy_segura")
-PORT = int(os.getenv("PORT", 8000))
+PORT = int(os.getenv("PORT", 8080))
 
 # URLs permitidas para CORS
 ALLOWED_ORIGINS = [
