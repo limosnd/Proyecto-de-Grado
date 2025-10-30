@@ -23,16 +23,9 @@ FROM nginx:alpine
 # Copiar archivos construidos desde el stage anterior
 COPY --from=build /app/dist/frontend /usr/share/nginx/html
 
-# Copiar configuración personalizada de nginx
-RUN echo 'server { \
-    listen 80; \
-    server_name localhost; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# La configuración por defecto de nginx ya funciona para SPAs
+# Solo necesitamos asegurar que sirva index.html para rutas no encontradas
+RUN sed -i 's|try_files.*|try_files $uri $uri/ /index.html;|g' /etc/nginx/conf.d/default.conf
 
 # Exponer puerto 80
 EXPOSE 80
